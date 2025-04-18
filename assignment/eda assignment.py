@@ -9,14 +9,14 @@ airbnb = pd.read_csv('./data/airbnb_hw.csv')
 airbnb['Price'] = airbnb['Price'].replace('[\$,]', '', regex=True).astype(float)
 
 ## 2. Dimensions of the data, number of observations, and variables
-#print("Shape:", airbnb.shape)
-#print("Columns:", airbnb.columns.tolist())
-#print(airbnb.head())
+print("Shape:", airbnb.shape)
+print("Columns:", airbnb.columns.tolist())
+print(airbnb.head())
 
 ## 3. Cross tabulate Room Type and Property Type
 airbnb.columns = airbnb.columns.str.strip()
 room_property = pd.crosstab(airbnb['Room Type'], airbnb['Property Type'])
-#print(room_property)
+print(room_property)
 
 # For property type, Apartment dominates the dataset and are available in entire home, private, room, shared room.
 # Across different property type, shared room has the lowest number. For bed and breakfast, private rooms are more common
@@ -56,8 +56,8 @@ plt.show()
 
 # Statistical Description
 price_description = airbnb_filtered['Price'].describe()
-#print("Descriptive statistics for Airbnb Price (Filtered):")
-#print(price_description)
+print("Descriptive statistics for Airbnb Price (Filtered):")
+print(price_description)
 
 airbnb_filtered['price_log'] = np.log1p(airbnb_filtered['Price'])
 
@@ -92,8 +92,8 @@ plt.show()
 
 # Statistical description for log(price)
 log_price_description = airbnb_filtered['price_log'].describe()
-#print("Descriptive statistics for Log(Price):")
-#print(log_price_description)
+print("Descriptive statistics for Log(Price):")
+print(log_price_description)
 
 plt.figure(figsize=(8, 5))
 sns.scatterplot(data=airbnb_filtered, x='Beds', y='price_log')
@@ -158,3 +158,4 @@ plt.show()
 # Based on the graph, most listings are concentrated where bedroom count are 1-2 and log orice 4.5-5.5.
 # It appears to be evenly spread across a range of bed counts and prices, and higher bed listings are visually
 # overrepresented in scatterplots.
+
