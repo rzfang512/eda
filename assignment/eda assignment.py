@@ -159,3 +159,98 @@ plt.show()
 # It appears to be evenly spread across a range of bed counts and prices, and higher bed listings are visually
 # overrepresented in scatterplots.
 
+# Question 4
+import pandas as pd
+
+drill = pd.read_csv('./data/drilling_rigs.csv')
+
+## 1.
+drill['time'] = pd.to_datetime(drill['Month'], format='%Y %B', errors='coerce')
+
+# STEP 2: Identify and convert numeric columns with potential 'Not Available' strings
+cols_to_convert = drill.columns[1:-1].tolist() + [drill.columns[-1]]  # all columns except 'Month' and 'time'
+
+# STEP 3: Convert all identified columns to numeric, forcing 'Not Available' to NaN
+for col in cols_to_convert:
+    drill[col] = pd.to_numeric(drill[col], errors='coerce')
+
+# STEP 4: Summary of cleaning results
+print("✅ Data cleaned successfully!")
+print("Shape of cleaned dataset:", drill.shape)
+print("Data types:\n", drill.dtypes)
+print("\nMissing values per column:\n", drill.isna().sum())
+print("\nFirst few rows:\n", drill.head())
+
+# There are 623 observations with 11 variables. Some variables are correctly interpreted, some are not. Some cells contain string
+# that shows "Not Available" which prevents pandas from reading correctly. By coercing invalid numeric values to NaN, we are
+# able to clean the data.
+
+## 2.
+drill['time'] = pd.to_datetime(drill['Month'], format='%Y %B')
+
+# Convert the rig count column to numeric
+col = 'Active Well Service Rig Count (Number of Rigs)'
+drill[col] = pd.to_numeric(drill[col], errors='coerce')
+
+# Create line plot
+plt.figure(figsize=(12, 6))
+plt.plot(drill['time'], drill[col], color='tab:blue')
+plt.title('Active Well Service Rig Count Over Time')
+plt.xlabel('Date')
+plt.ylabel('Number of Rigs')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# The line plot shows a gradually decreasing trend with a spike of number of rigs between 1980 and 1990. After 2020, it
+# reaches the lowest.
+
+## 3.
+drill['time'] = pd.to_datetime(drill['Month'], format='%Y %B')
+
+# Convert rig count column to numeric
+col = 'Active Well Service Rig Count (Number of Rigs)'
+drill[col] = pd.to_numeric(drill[col], errors='coerce')
+
+# Compute first difference (month-to-month change)
+drill['Rig Change'] = drill[col].diff()
+
+# Plot the first difference
+plt.figure(figsize=(12, 6))
+plt.plot(drill['time'], drill['Rig Change'], color='darkorange')
+plt.title('Monthly Change in Active Well Service Rig Count')
+plt.xlabel('Date')
+plt.ylabel('Change in Number of Rigs')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# There are some notable decrease in the line graph. Between 1980-1990, the change in number of rigs
+# decreases to more than -1000, and between 2000-2010, the change in number of rigs also almost reach to -1000.
+# There are 2 steep increase in 1980-1990 that the change in number of rigs exceeds 500.
+
+## 4.
+onshore_col = drill.columns[1]
+offshore_col = drill.columns[2]
+
+# Convert these columns to numeric
+drill[onshore_col] = pd.to_numeric(drill[onshore_col], errors='coerce')
+drill[offshore_col] = pd.to_numeric(drill[offshore_col], errors='coerce')
+
+# Melt the dataset
+melted = drill.melt(
+    id_vars='time',
+    value_vars=[onshore_col, offshore_col],
+    var_name='Rig Type',
+    value_name='Count'
+)
+
+# Plot the melted data
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=melted, x='time', y='Count', hue='Rig Type')
+plt.title('Onshore vs Offshore Rig Counts Over Time')
+plt.xlabel('Date')
+plt.ylabel('Number of Rigs')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
